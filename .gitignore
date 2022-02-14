@@ -1,0 +1,8 @@
+/animation_output
+audio/
+ds_graph/
+flame/
+model/
+template/
+training_data/
+*__pycache__*
