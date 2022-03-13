@@ -11,5 +11,4 @@ ipython
 matplotlib
 trimesh
 pyrender
-gtts
-pydub
+

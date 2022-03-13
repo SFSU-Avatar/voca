@@ -41,7 +41,6 @@ parser.add_argument('--uv_template_fname', default='', help='Path of a FLAME tem
 parser.add_argument('--texture_img_fname', default='', help='Path of the texture image')
 parser.add_argument('--out_path', default='./voca/animation_output', help='Output path')
 parser.add_argument('--visualize', default='True', help='Visualize animation')
-parser.add_argument('--text', default=None, help='Text input for avatar speech')
 
 args = parser.parse_args()
 tf_model_fname = args.tf_model_fname
@@ -50,7 +49,6 @@ audio_fname = args.audio_fname
 template_fname = args.template_fname
 condition_idx = args.condition_idx
 out_path = args.out_path
-text = args.text
 
 uv_template_fname = args.uv_template_fname
 texture_img_fname = args.texture_img_fname
@@ -58,4 +56,5 @@ texture_img_fname = args.texture_img_fname
 if not os.path.exists(out_path):
     os.makedirs(out_path)
 
-inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condition_idx, out_path, str2bool(args.visualize), uv_template_fname=uv_template_fname, texture_img_fname=texture_img_fname)
+inference(tf_model_fname, ds_fname, audio_fname, template_fname, condition_idx, out_path, str2bool(args.visualize), uv_template_fname=uv_template_fname, texture_img_fname=texture_img_fname)
+

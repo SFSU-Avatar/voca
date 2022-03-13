@@ -26,13 +26,8 @@ from subprocess import call
 from scipy.io import wavfile
 
 from psbody.mesh import Mesh
-from utils.audio_handler import AudioHandler
+from utils.audio_handler import  AudioHandler
 from utils.rendering import render_mesh_helper
-
-from gtts import gTTS
-from pydub import AudioSegment
-from io import BytesIO
-
 
 def process_audio(ds_path, audio, sample_rate):
     config = {}
@@ -69,7 +64,6 @@ def output_sequence_meshes(sequence_vertices, template, out_path, uv_template_fn
             out_mesh.set_texture_image(texture_img_fname)
         out_mesh.write_obj(out_fname)
 
-
 def render_sequence_meshes(audio_fname, sequence_vertices, template, out_path, uv_template_fname='', texture_img_fname=''):
     if not os.path.exists(out_path):
         os.makedirs(out_path)
@@ -104,38 +98,16 @@ def render_sequence_meshes(audio_fname, sequence_vertices, template, out_path, u
     call(cmd)
 
 
-def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condition_idx, out_path, render_sequence=True, uv_template_fname='', texture_img_fname=''):
+def inference(tf_model_fname, ds_fname, audio_fname, template_fname, condition_idx, out_path, render_sequence=True, uv_template_fname='', texture_img_fname=''):
     template = Mesh(filename=template_fname)
 
-    if text:
-        # save to file for now
-        tts = gTTS(text, lang='en')
-        audio_fname = './audio/tts.mp3'
-        tts.save(audio_fname)
-
-        # instead of writing to file, store in local buffer for real-time app
-        # mp3_data = BytesIO()
-        # tts = gTTS(text, lang='en')
-        # tts.write_to_fp(mp3_data)
-        # mp3_data.seek(0)
-
-        audio_seg = AudioSegment.from_file(audio_fname, format="mp3")
-        audio = np.array(audio_seg.get_array_of_samples())
-        sample_rate = audio_seg.frame_rate
-    else:
-        sample_rate, audio = wavfile.read(audio_fname)
-
+    sample_rate, audio = wavfile.read(audio_fname)
     if audio.ndim != 1:
         print('Audio has multiple channels, only first channel is considered')
         audio = audio[:,0]
 
-    # TODO: instead of tts then DeepSpeech, use text to directly produce (F, W, D) array
-    # processed_audio.shape = (F, W, D)
-    # F - number of frames
-    # W - window size
-    # D - size of alphabet
     processed_audio = process_audio(ds_fname, audio, sample_rate)
-    
+
     # Load previously saved meta graph in the default graph
     saver = tf.train.import_meta_graph(tf_model_fname + '.meta')
     graph = tf.get_default_graph()

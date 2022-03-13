@@ -1,8 +1,12 @@
 /animation_output
+/animation_output_textured
+/FLAME_variation_pose
+/FLAME_eye_blink
 audio/
 ds_graph/
 flame/
 model/
 template/
 training_data/
+mesh/
 *__pycache__*
