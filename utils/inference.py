@@ -24,6 +24,7 @@ import numpy as np
 import tensorflow as tf
 from subprocess import call
 from scipy.io import wavfile
+import time
 
 from psbody.mesh import Mesh
 from utils.audio_handler import AudioHandler
@@ -156,9 +157,28 @@ def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condi
         # Restore trained model
         saver.restore(session, tf_model_fname)
         predicted_vertices = np.squeeze(session.run(output_decoder, feed_dict))
+
+        timerFile = open('performance_tracker.txt', 'w')
+        outTime1 = time.perf_counter()
+        timerFile.write(f"Started output_sequence_meshes at: {outTime1:0.2f}\n")
+
         output_sequence_meshes(predicted_vertices, template, out_path)
+
+        outTime2 = time.perf_counter()
+        timerFile.write(f"Ended output_sequence_meshes at: {outTime2:0.2f}\n")
+        timerFile.write(f"Total time for output_sequence_meshes: {outTime2-outTime1:0.2f}\n\n")
+
         if(render_sequence):
+            renderTime1 = time.perf_counter()
+            timerFile.write(f"Started render_sequence_meshes at: {renderTime1:0.2f}\n")
+
             render_sequence_meshes(audio_fname, predicted_vertices, template, out_path, uv_template_fname, texture_img_fname)
+
+            renderTime2 = time.perf_counter()
+            timerFile.write(f"Ended render_sequence_meshes at: {renderTime2:0.2f}\n")
+            timerFile.write(f"Total time for render_sequence_meshes: {renderTime2-renderTime1:0.2f}\n\n")
+
+        timerFile.close()
     tf.reset_default_graph()
 
 

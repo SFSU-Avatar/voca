@@ -20,6 +20,7 @@ import os
 import glob
 import argparse
 from utils.inference import inference
+import time
 
 def str2bool(val):
     if isinstance(val, bool):
@@ -30,6 +31,11 @@ def str2bool(val):
         elif val.lower() in ['false', 'f', 'no', 'n']:
             return False
     return False
+
+timerFile = open('performance_tracker.txt', 'a')
+timerFile.truncate()
+startTime = time.perf_counter()
+timerFile.write(f"Started run at: {startTime:0.2f}\n")
 
 parser = argparse.ArgumentParser(description='Voice operated character animation')
 parser.add_argument('--tf_model_fname', default='./model/gstep_52280.model', help='Path to trained VOCA model')
@@ -58,4 +64,16 @@ texture_img_fname = args.texture_img_fname
 if not os.path.exists(out_path):
     os.makedirs(out_path)
 
+infTime1 = time.perf_counter()
+timerFile.write(f"Started inference at: {infTime1:0.2f}\n")
+
 inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condition_idx, out_path, str2bool(args.visualize), uv_template_fname=uv_template_fname, texture_img_fname=texture_img_fname)
+
+infTime2 = time.perf_counter()
+timerFile.write(f"Ended inference at: {infTime2:0.2f}\n")
+timerFile.write(f"Total time for inference: {infTime2-infTime1:0.2f}\n\n")
+
+endTime = time.perf_counter()
+timerFile.write(f"Ended run at: {endTime:0.2f}\n")
+timerFile.write(f"Total time for run: {endTime-startTime:0.2f}\n\n")
+timerFile.close()
