@@ -33,6 +33,7 @@ from utils.rendering import render_mesh_helper
 from gtts import gTTS
 from pydub import AudioSegment
 from io import BytesIO
+import threading
 
 
 def process_audio(ds_path, audio, sample_rate):
@@ -50,16 +51,19 @@ def process_audio(ds_path, audio, sample_rate):
 
 
 def output_sequence_meshes(sequence_vertices, template, out_path, uv_template_fname='', texture_img_fname=''):
+    # Path of where to store the obj files (create if doesn't exist)
     mesh_out_path = os.path.join(out_path, 'meshes')
     if not os.path.exists(mesh_out_path):
         os.makedirs(mesh_out_path)
 
+    # If the template obj file exists
     if os.path.exists(uv_template_fname):
         uv_template = Mesh(filename=uv_template_fname)
         vt, ft = uv_template.vt, uv_template.ft
     else:
         vt, ft = None, None
 
+    # For each frame in the given number of frames
     num_frames = sequence_vertices.shape[0]
     for i_frame in range(num_frames):
         out_fname = os.path.join(mesh_out_path, '%05d.obj' % i_frame)
@@ -162,7 +166,7 @@ def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condi
         outTime1 = time.perf_counter()
         timerFile.write(f"Started output_sequence_meshes at: {outTime1:0.2f}\n")
 
-        output_sequence_meshes(predicted_vertices, template, out_path)
+        # output_sequence_meshes(predicted_vertices, template, out_path)
 
         outTime2 = time.perf_counter()
         timerFile.write(f"Ended output_sequence_meshes at: {outTime2:0.2f}\n")
