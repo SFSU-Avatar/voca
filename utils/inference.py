@@ -76,15 +76,20 @@ def output_sequence_meshes(sequence_vertices, template, out_path, uv_template_fn
 
 
 def render_sequence_meshes(audio_fname, sequence_vertices, template, out_path, uv_template_fname='', texture_img_fname=''):
+    # Create output path if it doesn't exist
     if not os.path.exists(out_path):
         os.makedirs(out_path)
-
+    
+    # Create a temporary video file
     tmp_video_file = tempfile.NamedTemporaryFile('w', suffix='.mp4', dir=out_path)
+    
+    # Create a video writer based on openCV version
     if int(cv2.__version__[0]) < 3:
         writer = cv2.VideoWriter(tmp_video_file.name, cv2.cv.CV_FOURCC(*'mp4v'), 60, (800, 800), True)
     else:
         writer = cv2.VideoWriter(tmp_video_file.name, cv2.VideoWriter_fourcc(*'mp4v'), 60, (800, 800), True)
-
+    
+    # Bring in mesh and texture if they exist
     if os.path.exists(uv_template_fname) and os.path.exists(texture_img_fname):
         uv_template = Mesh(filename=uv_template_fname)
         vt, ft = uv_template.vt, uv_template.ft
@@ -92,17 +97,26 @@ def render_sequence_meshes(audio_fname, sequence_vertices, template, out_path, u
     else:
         vt, ft = None, None
         tex_img = None
-
+    
     num_frames = sequence_vertices.shape[0]
     center = np.mean(sequence_vertices[0], axis=0)
+
+    # For each frame in the video
+    timerFile = open('performance_tracker.txt', 'w')
+    forLoopStart = time.perf_counter()
+    timerFile.write(f"render for loop started at: {forLoopStart}\n")
     for i_frame in range(num_frames):
         render_mesh = Mesh(sequence_vertices[i_frame], template.f)
         if vt is not None and ft is not None:
             render_mesh.vt, render_mesh.ft = vt, ft
         img = render_mesh_helper(render_mesh, center, tex_img=tex_img)
         writer.write(img)
+    forLoopEnd = time.perf_counter()
+    timerFile.write(f"render for loop ended at: {forLoopEnd}\n")
+    timerFile.write(f"Total time for render for loop: {forLoopEnd-forLoopStart}\n\n")
+    timerFile.close()
     writer.release()
-
+    
     video_fname = os.path.join(out_path, 'video.mp4')
     cmd = ('ffmpeg' + ' -i {0} -i {1} -vcodec h264 -ac 2 -channel_layout stereo -pix_fmt yuv420p {2}'.format(
         audio_fname, tmp_video_file.name, video_fname)).split()
@@ -162,7 +176,7 @@ def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condi
         saver.restore(session, tf_model_fname)
         predicted_vertices = np.squeeze(session.run(output_decoder, feed_dict))
 
-        timerFile = open('performance_tracker.txt', 'w')
+        timerFile = open('performance_tracker.txt', 'a')
         outTime1 = time.perf_counter()
         timerFile.write(f"Started output_sequence_meshes at: {outTime1:0.2f}\n")
 

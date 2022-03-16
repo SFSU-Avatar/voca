@@ -1,16 +1,20 @@
-Started output_sequence_meshes at: 2234.92
-Ended output_sequence_meshes at: 2234.92
+render for loop started at: 3268.25165822
+render for loop ended at: 3325.065086703
+Total time for render for loop: 56.813428482999825
+
+Started output_sequence_meshes at: 3268.19
+Ended output_sequence_meshes at: 3268.19
 Total time for output_sequence_meshes: 0.00
 
-Started render_sequence_meshes at: 2234.92
-Ended render_sequence_meshes at: 2295.99
-Total time for render_sequence_meshes: 61.08
+Started render_sequence_meshes at: 3268.19
+Ended render_sequence_meshes at: 3362.08
+Total time for render_sequence_meshes: 93.89
 
-Started run at: 2177.33
-Started inference at: 2177.33
-Ended inference at: 2296.05
-Total time for inference: 118.72
+Started run at: 3211.07
+Started inference at: 3211.07
+Ended inference at: 3362.12
+Total time for inference: 151.05
 
-Ended run at: 2296.05
-Total time for run: 118.72
+Ended run at: 3362.12
+Total time for run: 151.05
 
