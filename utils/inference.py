@@ -33,7 +33,7 @@ from utils.rendering import render_mesh_helper
 from gtts import gTTS
 from pydub import AudioSegment
 from io import BytesIO
-import threading
+import multiprocessing as mp
 
 
 def process_audio(ds_path, audio, sample_rate):
@@ -75,6 +75,18 @@ def output_sequence_meshes(sequence_vertices, template, out_path, uv_template_fn
         out_mesh.write_obj(out_fname)
 
 
+def test_func(sequence_vertices, i_frame, template, vt, ft, center, img, tmp_video_file):
+    if int(cv2.__version__[0]) < 3:
+        writer = cv2.VideoWriter(tmp_video_file.name, cv2.cv.CV_FOURCC(*'mp4v'), 60, (800, 800), True)
+    else:
+        writer = cv2.VideoWriter(tmp_video_file.name, cv2.VideoWriter_fourcc(*'mp4v'), 60, (800, 800), True)
+    render_mesh = Mesh(sequence_vertices[i_frame], template.f)
+    if vt is not None and ft is not None:
+        render_mesh.vt, render_mesh.ft = vt, ft
+    img = render_mesh_helper(render_mesh, center, tex_img=img)
+    writer.write(img)
+    writer.release()
+
 def render_sequence_meshes(audio_fname, sequence_vertices, template, out_path, uv_template_fname='', texture_img_fname=''):
     # Create output path if it doesn't exist
     if not os.path.exists(out_path):
@@ -105,22 +117,42 @@ def render_sequence_meshes(audio_fname, sequence_vertices, template, out_path, u
     timerFile = open('performance_tracker.txt', 'w')
     forLoopStart = time.perf_counter()
     timerFile.write(f"render for loop started at: {forLoopStart}\n")
+
     for i_frame in range(num_frames):
         render_mesh = Mesh(sequence_vertices[i_frame], template.f)
         if vt is not None and ft is not None:
             render_mesh.vt, render_mesh.ft = vt, ft
         img = render_mesh_helper(render_mesh, center, tex_img=tex_img)
         writer.write(img)
+
+    # CHASE - Attempt at multiprocessing
+    # args_arr = []
+    # for i_frame in range(num_frames):
+    #     args_arr.append((sequence_vertices, i_frame, template, vt, ft, center, tex_img, tmp_video_file))
+    # print(args_arr)
+    # p = mp.Pool(mp.cpu_count())
+    # p.starmap(test_func, args_arr)
+    # p.close()
+    # p.join()
+
     forLoopEnd = time.perf_counter()
     timerFile.write(f"render for loop ended at: {forLoopEnd}\n")
     timerFile.write(f"Total time for render for loop: {forLoopEnd-forLoopStart}\n\n")
-    timerFile.close()
+    
     writer.release()
+
+    cmdExecStart = time.perf_counter()
+    timerFile.write(f"cmd execution started at: {cmdExecStart}\n")
     
     video_fname = os.path.join(out_path, 'video.mp4')
     cmd = ('ffmpeg' + ' -i {0} -i {1} -vcodec h264 -ac 2 -channel_layout stereo -pix_fmt yuv420p {2}'.format(
         audio_fname, tmp_video_file.name, video_fname)).split()
     call(cmd)
+
+    cmdExecEnd = time.perf_counter()
+    timerFile.write(f"cmd exxecution ended at: {cmdExecEnd}\n")
+    timerFile.write(f"Total time for cmd execution loop: {cmdExecEnd-cmdExecStart}\n\n")
+    timerFile.close()
 
 
 def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condition_idx, out_path, render_sequence=True, uv_template_fname='', texture_img_fname=''):
