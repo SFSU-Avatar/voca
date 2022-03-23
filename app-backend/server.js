@@ -33,6 +33,11 @@ app.post('/upload', function (req, res) {
     }
   });
 
+  //TO-DO: Create a file object for each obj
+  //Send that file object using res.write so that we can send multiple
+  //call res.end when done
+  //Frontend will recieve as data blob
+
   // res.send({ message: `File ${file.name} was uploaded.` });
   var options = {
     root: path.join(__dirname)
