@@ -33,7 +33,14 @@ app.post('/upload', function (req, res) {
     }
   });
 
-  res.send({ message: `File ${file.name} was uploaded.` });
-  // res.sendFile("../audio/tts.mp3");
+  // res.send({ message: `File ${file.name} was uploaded.` });
+  var options = {
+    root: path.join(__dirname)
+  }
+  res.sendFile("server.js", options, (err) => {
+    if (err) {
+      console.log("ERROR: " + err);
+    }
+  });
 
 });
