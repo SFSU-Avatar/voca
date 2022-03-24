@@ -2,8 +2,10 @@
 const path = require("path");
 const express = require('express');
 const expressFileUpload = require("express-fileupload");
+const { write } = require("fs");
 const app = express();
 const port = process.env.PORT || 5000;
+const fielTran = require("get-file-object-from-local-path");
 
 app.use(expressFileUpload());
 
@@ -24,7 +26,6 @@ app.get("/api", (req, res) => {
 });
 
 app.post('/upload', function (req, res) {
-  console.log(req.files.uploadedFile); // the uploaded file object
   let file = req.files.uploadedFile;
 
   file.mv(`audio/${file.name}`, (err) => {
@@ -42,10 +43,20 @@ app.post('/upload', function (req, res) {
   var options = {
     root: path.join(__dirname)
   }
-  res.sendFile("server.js", options, (err) => {
-    if (err) {
-      console.log("ERROR: " + err);
-    }
-  });
+
+  let objFile1 = new fielTran.LocalFileData(`${path.join(__dirname)}/animation_output_textured/meshes/00000.obj`,);
+  let objFile2 = new fielTran.LocalFileData(`${path.join(__dirname)}/animation_output_textured/meshes/00001.obj`);
+  console.log(objFile1);
+  // res.send(objFile1);
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.write(JSON.stringify(objFile1));
+  res.end();
+
+  // res.sendFile("animation_output_textured/meshes/00000.obj", options, (err) => {
+  //   if (err) {
+  //     console.log("ERROR: " + err);
+  //   }
+  // });
 
 });
