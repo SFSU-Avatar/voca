@@ -3,3 +3,19 @@ Ended output_sequence_meshes at: 5396.15
 Total time for output_sequence_meshes: 0.00
 
 Started render_sequence_meshes at: 5396.15
+Started output_sequence_meshes at: 645.60
+Ended output_sequence_meshes at: 656.10
+Total time for output_sequence_meshes: 10.50
+
+Started render_sequence_meshes at: 656.10
+Ended render_sequence_meshes at: 656.10
+Total time for render_sequence_meshes: 0.00
+
+Started run at: 581.44
+Started inference at: 581.45
+Ended inference at: 656.16
+Total time for inference: 74.71
+
+Ended run at: 656.16
+Total time for run: 74.71
+

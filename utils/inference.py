@@ -212,7 +212,7 @@ def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condi
         outTime1 = time.perf_counter()
         timerFile.write(f"Started output_sequence_meshes at: {outTime1:0.2f}\n")
 
-        # output_sequence_meshes(predicted_vertices, template, out_path)
+        output_sequence_meshes(predicted_vertices, template, out_path)
 
         outTime2 = time.perf_counter()
         timerFile.write(f"Ended output_sequence_meshes at: {outTime2:0.2f}\n")
@@ -222,7 +222,7 @@ def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condi
             renderTime1 = time.perf_counter()
             timerFile.write(f"Started render_sequence_meshes at: {renderTime1:0.2f}\n")
 
-            render_sequence_meshes(audio_fname, predicted_vertices, template, out_path, uv_template_fname, texture_img_fname)
+            # render_sequence_meshes(audio_fname, predicted_vertices, template, out_path, uv_template_fname, texture_img_fname)
 
             renderTime2 = time.perf_counter()
             timerFile.write(f"Ended render_sequence_meshes at: {renderTime2:0.2f}\n")
