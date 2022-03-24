@@ -27,7 +27,7 @@ app.post('/upload', function (req, res) {
   console.log(req.files.uploadedFile); // the uploaded file object
   let file = req.files.uploadedFile;
 
-  file.mv(`../audio/${file.name}`, (err) => {
+  file.mv(`audio/${file.name}`, (err) => {
     if (err) {
       console.log("ERROR: " + err);
     }
