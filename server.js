@@ -55,19 +55,11 @@ app.get('/getFiles', (req, res) => {
   });
 
   console.log(objFile1);
-  res.write("Message1");
-  res.write("Message2");
 
-  // res.writeHead(200, { 'Content-Type': 'application/json' });
-  // res.write(JSON.stringify({ arrayBuffer: "objFile1", name: "myThing.obj", type: "model/obj" }));
-  // res.write(JSON.stringify({ arrayBuffer: "objFile2", name: "myThing2.obj", type: "model/obj" }));
-  // res.write(JSON.stringify(objFile2));
+  res.write(JSON.stringify({ arrayBuffer: objFile1, name: "myThing.obj", type: "model/obj" }));
+  res.write("$");
+  res.write(JSON.stringify({ arrayBuffer: objFile2, name: "myThing2.obj", type: "model/obj" }));
+  res.write("$");
+
   res.end();
-
-  // res.sendFile("animation_output_textured/meshes/00000.obj", options, (err) => {
-  //   if (err) {
-  //     console.log("ERROR: " + err);
-  //   }
-  // });
 });
-
