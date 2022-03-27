@@ -3,9 +3,11 @@ const path = require("path");
 const express = require('express');
 const expressFileUpload = require("express-fileupload");
 const { write } = require("fs");
+const http = require('http');
 const app = express();
 const port = process.env.PORT || 5000;
-const fielTran = require("get-file-object-from-local-path");
+const fileTran = require("get-file-object-from-local-path");
+const fs = require("fs");
 
 app.use(expressFileUpload());
 
@@ -25,7 +27,7 @@ app.get("/api", (req, res) => {
   res.send({ message: "Hello from server!" });
 });
 
-app.post('/upload', function (req, res) {
+app.post('/upload', (req, res) => {
   let file = req.files.uploadedFile;
 
   file.mv(`audio/${file.name}`, (err) => {
@@ -34,23 +36,32 @@ app.post('/upload', function (req, res) {
     }
   });
 
-  //TO-DO: Create a file object for each obj
-  //Send that file object using res.write so that we can send multiple
-  //call res.end when done
-  //Frontend will recieve as data blob
+  res.send({ message: `File ${file.name} was uploaded.` });
+});
 
-  // res.send({ message: `File ${file.name} was uploaded.` });
-  var options = {
-    root: path.join(__dirname)
-  }
+app.get('/getFiles', (req, res) => {
+  // let objFile1 = new fileTran.LocalFileData(`${path.join(__dirname)}/animation_output_textured/meshes/00000.obj`);
 
-  let objFile1 = new fielTran.LocalFileData(`${path.join(__dirname)}/animation_output_textured/meshes/00000.obj`,);
-  let objFile2 = new fielTran.LocalFileData(`${path.join(__dirname)}/animation_output_textured/meshes/00001.obj`);
+  let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/00000.obj`, (err) => {
+    if (err) {
+      console.log("ERROR: " + err);
+    }
+  });
+
+  let objFile2 = fs.readFileSync(`./animation_output_textured/meshes/00001.obj`, (err) => {
+    if (err) {
+      console.log("ERROR: " + err);
+    }
+  });
+
   console.log(objFile1);
-  // res.send(objFile1);
+  res.write("Message1");
+  res.write("Message2");
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.write(JSON.stringify(objFile1));
+  // res.writeHead(200, { 'Content-Type': 'application/json' });
+  // res.write(JSON.stringify({ arrayBuffer: "objFile1", name: "myThing.obj", type: "model/obj" }));
+  // res.write(JSON.stringify({ arrayBuffer: "objFile2", name: "myThing2.obj", type: "model/obj" }));
+  // res.write(JSON.stringify(objFile2));
   res.end();
 
   // res.sendFile("animation_output_textured/meshes/00000.obj", options, (err) => {
@@ -58,5 +69,5 @@ app.post('/upload', function (req, res) {
   //     console.log("ERROR: " + err);
   //   }
   // });
-
 });
+
