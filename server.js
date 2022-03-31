@@ -55,10 +55,12 @@ app.get('/getFiles', (req, res) => {
   //
   // An example of streaming 2 files is demonstrated below. Use this as a guide to
   // incorporate the file streaming process into the function generating obj files.
-  //
-
+  /////////////////////////////////////////////////////////////////////////////
+  res.writeHeader(200, {
+        'Content-Type': 'model/obj'
+    });
   //Store the file data of the first file into an object
-  let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/00000.obj`, (err) => {
+  let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/00000.obj`, 'utf8', (err) => {
     if (err) {
       console.log("ERROR: " + err);
     }
@@ -73,7 +75,7 @@ app.get('/getFiles', (req, res) => {
   res.write("$");
 
   //Store the file data of the second file into an object
-  let objFile2 = fs.readFileSync(`./animation_output_textured/meshes/00001.obj`, (err) => {
+  let objFile2 = fs.readFileSync(`./animation_output_textured/meshes/00001.obj`, 'utf8', (err) => {
     if (err) {
       console.log("ERROR: " + err);
     }
