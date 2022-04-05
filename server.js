@@ -79,7 +79,7 @@ app.get('/getFiles', (req, res) => {
     "./animation_output_textured"]);
   console.log("PID: ", py.pid);
   py.stdout.on("data", (msg) => {
-    console.log("START \n\n" + msg + " \nEND\n");
+    console.log(`\n${msg}\n`);
     console.log("STARTING");
     res.writeHeader(200, {
       'Content-Type': 'model/obj'

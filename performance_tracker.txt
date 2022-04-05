@@ -124,3 +124,19 @@ Total time for inference: 69.84
 Ended run at: 9181.02
 Total time for run: 69.84
 
+Started output_sequence_meshes at: 10337.42
+Ended output_sequence_meshes at: 10347.83
+Total time for output_sequence_meshes: 10.41
+
+Started render_sequence_meshes at: 10347.83
+Ended render_sequence_meshes at: 10347.83
+Total time for render_sequence_meshes: 0.00
+
+Started run at: 10278.74
+Started inference at: 10278.74
+Ended inference at: 10347.91
+Total time for inference: 69.17
+
+Ended run at: 10347.91
+Total time for run: 69.17
+
