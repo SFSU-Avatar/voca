@@ -21,6 +21,7 @@ import glob
 import argparse
 from utils.inference import inference
 import time
+import sys
 
 def str2bool(val):
     if isinstance(val, bool):
@@ -32,6 +33,7 @@ def str2bool(val):
             return False
     return False
 
+sys.stdout.write("RUNNING VOCA\n")
 timerFile = open('performance_tracker.txt', 'a')
 timerFile.truncate()
 startTime = time.perf_counter()
@@ -66,9 +68,9 @@ if not os.path.exists(out_path):
 
 infTime1 = time.perf_counter()
 timerFile.write(f"Started inference at: {infTime1:0.2f}\n")
-
 inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condition_idx, out_path, str2bool(args.visualize), uv_template_fname=uv_template_fname, texture_img_fname=texture_img_fname)
-
+sys.stdout.write("BACK FROM INFERENCE")
+sys.stdout.flush()
 infTime2 = time.perf_counter()
 timerFile.write(f"Ended inference at: {infTime2:0.2f}\n")
 timerFile.write(f"Total time for inference: {infTime2-infTime1:0.2f}\n\n")

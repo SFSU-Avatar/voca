@@ -1,21 +1,61 @@
-render for loop started at: 5396.221260343
-Ended output_sequence_meshes at: 5396.15
-Total time for output_sequence_meshes: 0.00
+render for loop started at: 1606.508337575
+render for loop ended at: 1669.477892388
+Total time for render for loop: 62.96955481300006
 
-Started render_sequence_meshes at: 5396.15
-Started output_sequence_meshes at: 645.60
-Ended output_sequence_meshes at: 656.10
-Total time for output_sequence_meshes: 10.50
+cmd execution started at: 1669.48069086
+cmd exxecution ended at: 1674.046066263
+Total time for cmd execution loop: 4.565375402999962
 
-Started render_sequence_meshes at: 656.10
-Ended render_sequence_meshes at: 656.10
+Started output_sequence_meshes at: 1594.19
+Ended output_sequence_meshes at: 1606.37
+Total time for output_sequence_meshes: 12.17
+
+Started render_sequence_meshes at: 1606.37
+Ended render_sequence_meshes at: 1674.05
+Total time for render_sequence_meshes: 67.68
+
+Started run at: 1535.22
+Started inference at: 1535.22
+Ended inference at: 1674.11
+Total time for inference: 138.89
+
+Ended run at: 1674.11
+Total time for run: 138.89
+
+Started run at: 3976.55
+Started run at: 4036.49
+Started run at: 4162.18
+Started run at: 4202.27
+Started run at: 4261.25
+Started run at: 4634.66
+Started inference at: 4634.66
+Started run at: 4827.52
+Started inference at: 4827.52
+Started run at: 4977.36
+Started inference at: 4977.36
+Started run at: 5191.55
+Started inference at: 5191.55
+Started run at: 5248.61
+Started inference at: 5248.61
+Started run at: 5553.17
+Started inference at: 5553.17
+Started run at: 5606.20
+Started inference at: 5606.20
+Started run at: 5644.17
+Started inference at: 5644.17
+Started output_sequence_meshes at: 5754.55
+Ended output_sequence_meshes at: 5764.83
+Total time for output_sequence_meshes: 10.28
+
+Started render_sequence_meshes at: 5764.83
+Ended render_sequence_meshes at: 5764.83
 Total time for render_sequence_meshes: 0.00
 
-Started run at: 581.44
-Started inference at: 581.45
-Ended inference at: 656.16
-Total time for inference: 74.71
+Started run at: 5693.77
+Started inference at: 5693.77
+Ended inference at: 5764.88
+Total time for inference: 71.11
 
-Ended run at: 656.16
-Total time for run: 74.71
+Ended run at: 5764.88
+Total time for run: 71.11
 

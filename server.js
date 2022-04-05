@@ -9,6 +9,8 @@ const port = process.env.PORT || 5000;
 const fileTran = require("get-file-object-from-local-path");
 const fs = require("fs");
 
+const { spawn } = require("child_process");
+
 app.use(expressFileUpload());
 
 //Stuff for deployment
@@ -30,7 +32,7 @@ app.get("/api", (req, res) => {
 app.post('/upload', (req, res) => {
   let file = req.files.uploadedFile;
 
-  file.mv(`audio/${file.name}`, (err) => {
+  file.mv(`audio/userAudio.wav`, (err) => {
     if (err) {
       console.log("ERROR: " + err);
     }
@@ -56,9 +58,33 @@ app.get('/getFiles', (req, res) => {
   // An example of streaming 2 files is demonstrated below. Use this as a guide to
   // incorporate the file streaming process into the function generating obj files.
   /////////////////////////////////////////////////////////////////////////////
+
+  //Call VOCA
+  const py = spawn("python", ["run_voca.py",
+    "--tf_model_fname",
+    "./model/gstep_52280.model",
+    "--ds_fname",
+    "./ds_graph/output_graph.pb",
+    "--text",
+    "Hello this is for the text to speech",
+    "--template_fname",
+    "./template/FLAME_sample.ply",
+    "--condition_idx",
+    "3",
+    "--uv_template_fname",
+    "./template/texture_mesh.obj",
+    "--texture_img_fname",
+    "./template/texture_mesh.png",
+    "--out_path",
+    "./animation_output_textured"]);
+  console.log("PID: ", py.pid);
+  py.stdout.on("data", (msg) => {
+    console.log("START \n\n" + msg + " \nEND\n");
+  })
+
   res.writeHeader(200, {
-        'Content-Type': 'model/obj'
-    });
+    'Content-Type': 'model/obj'
+  });
   //Store the file data of the first file into an object
   let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/00000.obj`, 'utf8', (err) => {
     if (err) {
@@ -83,6 +109,26 @@ app.get('/getFiles', (req, res) => {
 
   //Stream second file's data to frontend
   res.write(JSON.stringify({ arrayBuffer: objFile2, name: "File2.obj", type: "model/obj" }));
+  res.write("$");
+
+  let objFile3 = fs.readFileSync(`./animation_output_textured/meshes/00002.obj`, 'utf8', (err) => {
+    if (err) {
+      console.log("ERROR: " + err);
+    }
+  });
+
+  //Stream third file's data to frontend
+  res.write(JSON.stringify({ arrayBuffer: objFile3, name: "File3.obj", type: "model/obj" }));
+  res.write("$");
+
+  let objFile4 = fs.readFileSync(`./animation_output_textured/meshes/00003.obj`, 'utf8', (err) => {
+    if (err) {
+      console.log("ERROR: " + err);
+    }
+  });
+
+  //Stream fourth file's data to frontend
+  res.write(JSON.stringify({ arrayBuffer: objFile4, name: "File4.obj", type: "model/obj" }));
   res.write("$");
 
   console.log("\n[Data Sent]\n");
