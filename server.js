@@ -80,59 +80,61 @@ app.get('/getFiles', (req, res) => {
   console.log("PID: ", py.pid);
   py.stdout.on("data", (msg) => {
     console.log("START \n\n" + msg + " \nEND\n");
+    console.log("STARTING");
+    res.writeHeader(200, {
+      'Content-Type': 'model/obj'
+    });
+    //Store the file data of the first file into an object
+    let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/00000.obj`, 'utf8', (err) => {
+      if (err) {
+        console.log("ERROR: " + err);
+      }
+    });
+
+    //Stream first file's data to frontend
+    // arrayBuffer - The file data that was read into an object
+    // name - the name of the file (can be programatically determiend similar 
+    //        to how it is done in output_sequence_meshes)
+    // type - The file type, in our case "model/obj"
+    res.write(JSON.stringify({ arrayBuffer: objFile1, name: "File1.obj", type: "model/obj" }));
+    res.write("$");
+
+    //Store the file data of the second file into an object
+    let objFile2 = fs.readFileSync(`./animation_output_textured/meshes/00001.obj`, 'utf8', (err) => {
+      if (err) {
+        console.log("ERROR: " + err);
+      }
+    });
+
+    //Stream second file's data to frontend
+    res.write(JSON.stringify({ arrayBuffer: objFile2, name: "File2.obj", type: "model/obj" }));
+    res.write("$");
+
+    let objFile3 = fs.readFileSync(`./animation_output_textured/meshes/00002.obj`, 'utf8', (err) => {
+      if (err) {
+        console.log("ERROR: " + err);
+      }
+    });
+
+    //Stream third file's data to frontend
+    res.write(JSON.stringify({ arrayBuffer: objFile3, name: "File3.obj", type: "model/obj" }));
+    res.write("$");
+
+    let objFile4 = fs.readFileSync(`./animation_output_textured/meshes/00003.obj`, 'utf8', (err) => {
+      if (err) {
+        console.log("ERROR: " + err);
+      }
+    });
+
+    //Stream fourth file's data to frontend
+    res.write(JSON.stringify({ arrayBuffer: objFile4, name: "File4.obj", type: "model/obj" }));
+    res.write("$");
+
+    console.log("\n[Data Sent]\n");
+
+    //Close the connection after all files are sent
+    res.end();
   })
 
-  res.writeHeader(200, {
-    'Content-Type': 'model/obj'
-  });
-  //Store the file data of the first file into an object
-  let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/00000.obj`, 'utf8', (err) => {
-    if (err) {
-      console.log("ERROR: " + err);
-    }
-  });
 
-  //Stream first file's data to frontend
-  // arrayBuffer - The file data that was read into an object
-  // name - the name of the file (can be programatically determiend similar 
-  //        to how it is done in output_sequence_meshes)
-  // type - The file type, in our case "model/obj"
-  res.write(JSON.stringify({ arrayBuffer: objFile1, name: "File1.obj", type: "model/obj" }));
-  res.write("$");
-
-  //Store the file data of the second file into an object
-  let objFile2 = fs.readFileSync(`./animation_output_textured/meshes/00001.obj`, 'utf8', (err) => {
-    if (err) {
-      console.log("ERROR: " + err);
-    }
-  });
-
-  //Stream second file's data to frontend
-  res.write(JSON.stringify({ arrayBuffer: objFile2, name: "File2.obj", type: "model/obj" }));
-  res.write("$");
-
-  let objFile3 = fs.readFileSync(`./animation_output_textured/meshes/00002.obj`, 'utf8', (err) => {
-    if (err) {
-      console.log("ERROR: " + err);
-    }
-  });
-
-  //Stream third file's data to frontend
-  res.write(JSON.stringify({ arrayBuffer: objFile3, name: "File3.obj", type: "model/obj" }));
-  res.write("$");
-
-  let objFile4 = fs.readFileSync(`./animation_output_textured/meshes/00003.obj`, 'utf8', (err) => {
-    if (err) {
-      console.log("ERROR: " + err);
-    }
-  });
-
-  //Stream fourth file's data to frontend
-  res.write(JSON.stringify({ arrayBuffer: objFile4, name: "File4.obj", type: "model/obj" }));
-  res.write("$");
-
-  console.log("\n[Data Sent]\n");
-
-  //Close the connection after all files are sent
-  res.end();
 });

@@ -25,6 +25,7 @@ import tensorflow as tf
 from subprocess import call
 from scipy.io import wavfile
 import time
+import sys
 
 from psbody.mesh import Mesh
 from utils.audio_handler import AudioHandler
@@ -73,6 +74,7 @@ def output_sequence_meshes(sequence_vertices, template, out_path, uv_template_fn
         if os.path.exists(texture_img_fname):
             out_mesh.set_texture_image(texture_img_fname)
         out_mesh.write_obj(out_fname)
+        sys.stdout.write(out_fname)
 
 
 def test_func(sequence_vertices, i_frame, template, vt, ft, center, img, tmp_video_file):
