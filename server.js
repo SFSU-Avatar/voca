@@ -59,6 +59,31 @@ app.get('/getFiles', (req, res) => {
   // incorporate the file streaming process into the function generating obj files.
   /////////////////////////////////////////////////////////////////////////////
 
+
+  //*************************RETURN FILES INSTANTLY ******************************/
+  // let msg = "process audio: subj - seq\n00000.obj, 00001.obj, 00002.obj, 00003.obj, 00004.obj, 00005.obj, 00006.obj, 00007.obj, 00008.obj, 00009.obj, 00010.obj, 00011.obj, 00012.obj, 00013.obj, 00014.obj, 00015.obj, 00016.obj, 00017.obj, 00018.obj, 00019.obj, 00020.obj, 00021.obj, 00022.obj, 00023.obj, 00024.obj, 00025.obj, 00026.obj, 00027.obj, 00028.obj, 00029.obj, 00030.obj, 00031.obj, 00032.obj, 00033.obj, 00034.obj, 00035.obj, 00036.obj, 00037.obj, 00038.obj, 00039.obj, 00040.obj, 00041.obj, 00042.obj, 00043.obj, 00044.obj, 00045.obj, 00046.obj, 00047.obj, 00048.obj, 00049.obj, 00050.obj, 00051.obj, 00052.obj, 00053.obj, 00054.obj, 00055.obj, 00056.obj, 00057.obj, 00058.obj, 00059.obj, 00060.obj, 00061.obj, 00062.obj, 00063.obj, 00064.obj, 00065.obj, 00066.obj, 00067.obj, 00068.obj, 00069.obj, 00070.obj, 00071.obj, 00072.obj, 00073.obj, 00074.obj, 00075.obj, 00076.obj, 00077.obj, 00078.obj, 00079.obj, 00080.obj, 00081.obj, 00082.obj, 00083.obj, 00084.obj, 00085.obj, 00086.obj, 00087.obj, 00088.obj, 00089.obj, 00090.obj, 00091.obj, 00092.obj, 00093.obj, 00094.obj, 00095.obj, 00096.obj, 00097.obj, 00098.obj, 00099.obj, 00100.obj, 00101.obj, 00102.obj, 00103.obj, 00104.obj, 00105.obj, 00106.obj, 00107.obj, 00108.obj, 00109.obj, 00110.obj, 00111.obj, 00112.obj, 00113.obj, 00114.obj, 00115.obj, 00116.obj, 00117.obj, 00118.obj, 00119.obj, 00120.obj, 00121.obj, 00122.obj, 00123.obj, 00124.obj, 00125.obj, 00126.obj, 00127.obj, 00128.obj, 00129.obj, 00130.obj, 00131.obj, 00132.obj, 00133.obj, 00134.obj, 00135.obj, 00136.obj, 00137.obj, 00138.obj, 00139.obj, 00140.obj, 00141.obj, 00142.obj, 00143.obj, 00144.obj, 00145.obj, 00146.obj, 00147.obj, 00148.obj, 00149.obj, 00150.obj, 00151.obj, 00152.obj, 00153.obj, 00154.obj, 00155.obj, 00156.obj, 00157.obj, 00158.obj, 00159.obj, 00160.obj, 00161.obj, 00162.obj, 00163.obj, 00000.obj,";
+
+  // res.writeHeader(200, {
+  //   'Content-Type': 'model/obj'
+  // });
+
+  // var objNames = String(msg).slice(0, -1).replaceAll(" ", "").split("\n")[1].split(",");
+  // objNames.forEach((objName) => {
+  //   console.log(objName + "\n");
+  //   //Store the file data of the first file into an object
+  //   let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${objName}`, 'utf8', (err) => {
+  //     if (err) {
+  //       console.log("ERROR: " + err);
+  //     }
+  //   })
+
+  //   res.write(JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }));
+  //   res.write("$");
+  // });
+
+  // res.end();
+
+
   //Call VOCA
   const py = spawn("python", ["run_voca.py",
     "--tf_model_fname",
@@ -77,62 +102,34 @@ app.get('/getFiles', (req, res) => {
     "./template/texture_mesh.png",
     "--out_path",
     "./animation_output_textured"]);
+
+  //Output PID of python process
   console.log("PID: ", py.pid);
+
+  //When OBJ files are ready
   py.stdout.on("data", (msg) => {
-    console.log(`\n${msg}\n`);
     console.log("STARTING");
+    msg = String(msg).replaceAll(" ", "").split("\n")[1].slice(0, -1);
+    console.log(`${msg}`);
+
     res.writeHeader(200, {
       'Content-Type': 'model/obj'
     });
-    //Store the file data of the first file into an object
-    let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/00000.obj`, 'utf8', (err) => {
-      if (err) {
-        console.log("ERROR: " + err);
-      }
+
+    var objNames = msg.split(",");
+    objNames.forEach((objName) => {
+
+      //Store the file data of the first file into an object
+      let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${objName}`, 'utf8', (err) => {
+        if (err) {
+          console.log("ERROR: " + err);
+        }
+      });
+
+      res.write(JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }));
+      res.write("$");
     });
 
-    //Stream first file's data to frontend
-    // arrayBuffer - The file data that was read into an object
-    // name - the name of the file (can be programatically determiend similar 
-    //        to how it is done in output_sequence_meshes)
-    // type - The file type, in our case "model/obj"
-    res.write(JSON.stringify({ arrayBuffer: objFile1, name: "File1.obj", type: "model/obj" }));
-    res.write("$");
-
-    //Store the file data of the second file into an object
-    let objFile2 = fs.readFileSync(`./animation_output_textured/meshes/00001.obj`, 'utf8', (err) => {
-      if (err) {
-        console.log("ERROR: " + err);
-      }
-    });
-
-    //Stream second file's data to frontend
-    res.write(JSON.stringify({ arrayBuffer: objFile2, name: "File2.obj", type: "model/obj" }));
-    res.write("$");
-
-    let objFile3 = fs.readFileSync(`./animation_output_textured/meshes/00002.obj`, 'utf8', (err) => {
-      if (err) {
-        console.log("ERROR: " + err);
-      }
-    });
-
-    //Stream third file's data to frontend
-    res.write(JSON.stringify({ arrayBuffer: objFile3, name: "File3.obj", type: "model/obj" }));
-    res.write("$");
-
-    let objFile4 = fs.readFileSync(`./animation_output_textured/meshes/00003.obj`, 'utf8', (err) => {
-      if (err) {
-        console.log("ERROR: " + err);
-      }
-    });
-
-    //Stream fourth file's data to frontend
-    res.write(JSON.stringify({ arrayBuffer: objFile4, name: "File4.obj", type: "model/obj" }));
-    res.write("$");
-
-    console.log("\n[Data Sent]\n");
-
-    //Close the connection after all files are sent
     res.end();
   })
 
