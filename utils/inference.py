@@ -153,12 +153,13 @@ def render_sequence_meshes(audio_fname, sequence_vertices, template, out_path, u
     call(cmd)
 
     cmdExecEnd = time.perf_counter()
-    timerFile.write(f"cmd exxecution ended at: {cmdExecEnd}\n")
+    timerFile.write(f"cmd execution ended at: {cmdExecEnd}\n")
     timerFile.write(f"Total time for cmd execution loop: {cmdExecEnd-cmdExecStart}\n\n")
     timerFile.close()
 
 
-def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condition_idx, out_path, render_sequence=True, uv_template_fname='', texture_img_fname=''):
+def inference(tf_model_fname, ds_fname, audio_fname, template_fname, condition_idx, out_path, render_sequence=True, uv_template_fname='', texture_img_fname='', text=''):
+
     template = Mesh(filename=template_fname)
 
     # if text:
@@ -178,9 +179,14 @@ def inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condi
     #     sample_rate = audio_seg.frame_rate
     # else:
     #     sample_rate, audio = wavfile.read(audio_fname)
-
-    sample_rate, audio = wavfile.read(audio_fname)
-
+    
+    if(text == 'yes'):
+        audio_seg = AudioSegment.from_file(audio_fname, format="mp3")
+        audio = np.array(audio_seg.get_array_of_samples())
+        sample_rate = audio_seg.frame_rate
+    else:
+        sample_rate, audio = wavfile.read(audio_fname)
+    
     if audio.ndim != 1:
         print('Audio has multiple channels, only first channel is considered')
         audio = audio[:,0]

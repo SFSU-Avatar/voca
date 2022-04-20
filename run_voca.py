@@ -67,7 +67,8 @@ if not os.path.exists(out_path):
 
 infTime1 = time.perf_counter()
 timerFile.write(f"Started inference at: {infTime1:0.2f}\n")
-inference(tf_model_fname, ds_fname, audio_fname, text, template_fname, condition_idx, out_path, str2bool(args.visualize), uv_template_fname=uv_template_fname, texture_img_fname=texture_img_fname)
+
+inference(tf_model_fname, ds_fname, audio_fname, template_fname, condition_idx, out_path, str2bool(args.visualize), uv_template_fname=uv_template_fname, texture_img_fname=texture_img_fname, text=text)
 
 infTime2 = time.perf_counter()
 timerFile.write(f"Ended inference at: {infTime2:0.2f}\n")
