@@ -74,8 +74,8 @@ def output_sequence_meshes(sequence_vertices, template, out_path, uv_template_fn
         if os.path.exists(texture_img_fname):
             out_mesh.set_texture_image(texture_img_fname)
         out_mesh.write_obj(out_fname)
-        sys.stdout.write(out_fname.split("/")[-1] + ",")
-    sys.stdout.flush()
+        sys.stdout.write(out_fname.split("/")[-1])
+        sys.stdout.flush()
 
 
 def test_func(sequence_vertices, i_frame, template, vt, ft, center, img, tmp_video_file):

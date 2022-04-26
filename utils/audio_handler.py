@@ -110,7 +110,7 @@ class AudioHandler:
         with tf.Session(graph=graph) as sess:
             for subj in audio.keys():
                 for seq in audio[subj].keys():
-                    print('process audio: %s - %s' % (subj, seq))
+                    # print('process audio: %s - %s' % (subj, seq))
 
                     audio_sample = audio[subj][seq]['audio']
                     sample_rate = audio[subj][seq]['sample_rate']

@@ -110,7 +110,7 @@ app.get('/getFiles', (req, res) => {
   // res.end();
 
 
-  // //Call VOCA
+  //Call VOCA
   const py = spawn("python", ["run_voca.py",
     "--tf_model_fname",
     "./model/gstep_52280.model",
@@ -135,32 +135,38 @@ app.get('/getFiles', (req, res) => {
   //Output PID of python process
   console.log("PID: ", py.pid);
 
+  res.writeHeader(200, {
+    'Content-Type': 'model/obj'
+  });
+
   //When OBJ files are ready
   py.stdout.on("data", (msg) => {
-    console.log("STARTING", String(msg));
-    msg = String(msg).replaceAll(" ", "").split("\n")[1].slice(0, -1);
-    console.log(`${msg}`);
+    console.log("RECIEVED: ", String(msg));
+    objName = String(msg);//.replaceAll(" ", "").split("\n")[1].slice(0, -1);
+    console.log(`${objName}`);
 
-    res.writeHeader(200, {
-      'Content-Type': 'model/obj'
+
+
+    //Store the file data of the first file into an object
+    let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${objName}`, 'utf8', (err) => {
+      if (err) {
+        console.log("ERROR: " + err);
+      }
     });
 
-    var objNames = msg.split(",");
-    objNames.forEach((objName) => {
+    res.write(JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }));
+    res.write("$");
 
-      //Store the file data of the first file into an object
-      let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${objName}`, 'utf8', (err) => {
-        if (err) {
-          console.log("ERROR: " + err);
-        }
-      });
-
-      res.write(JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }));
-      res.write("$");
-    });
-
-    res.end();
   })
 
+  py.on('exit', () => {
+    console.log("DONE");
+    res.end();
+  });
+
+  py.on('error', () => {
+    console.log("VOCA Failed");
+    res.send({ message: "VOCA Failed" });
+  })
 
 });
