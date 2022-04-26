@@ -145,17 +145,33 @@ app.get('/getFiles', (req, res) => {
     objName = String(msg);//.replaceAll(" ", "").split("\n")[1].slice(0, -1);
     console.log(`${objName}`);
 
+    if (objName.length > 9) {
+      console.log("More than 1 title found");
+      //Store the file data of the first file into an object
+      var objList = objName.split(/(?<=[j])/g)
+      objList.forEach((name) => {
+        console.log("Name in loop: " + name);
+        //Store the file data of the first file into an object
+        let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${name}`, 'utf8', (err) => {
+          if (err) {
+            console.log("ERROR: " + err);
+          }
+        });
 
+        res.write(JSON.stringify({ arrayBuffer: objFile1, name: name, type: "model/obj" }));
+        res.write("$");
+      });
+    } else {
+      //Store the file data of the first file into an object
+      let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${objName}`, 'utf8', (err) => {
+        if (err) {
+          console.log("ERROR: " + err);
+        }
+      });
 
-    //Store the file data of the first file into an object
-    let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${objName}`, 'utf8', (err) => {
-      if (err) {
-        console.log("ERROR: " + err);
-      }
-    });
-
-    res.write(JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }));
-    res.write("$");
+      res.write(JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }));
+      res.write("$");
+    }
 
   })
 
