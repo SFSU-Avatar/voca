@@ -144,46 +144,32 @@ app.get('/getFiles', (req, res) => {
     // console.log("RECIEVED: ", String(msg));
     objName = String(msg);//.replaceAll(" ", "").split("\n")[1].slice(0, -1);
     // console.log(objName);
-
-    if (objName.length > 9) {
-      console.log("More than 1 title found");
+    console.log("More than 1 title found");
+    //Store the file data of the first file into an object
+    var objList = objName.split(/(?<=[j])/g)
+    objList.forEach((name) => {
+      console.log("Name in loop: " + name);
       //Store the file data of the first file into an object
-      var objList = objName.split(/(?<=[j])/g)
-      objList.forEach((name) => {
-        console.log("Name in loop: " + name);
-        //Store the file data of the first file into an object
-        let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${name}`, 'utf8', (err) => {
-          if (err) {
-            console.log("ERROR: " + err);
-          }
-        });
-
-        (async () => {
-          var content = JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }) + "$"
-          if (!res.write(content)) {
-            console.log("WAITING IN LOOP");
-            // Will pause every 16384 iterations until `drain` is emitted
-            await new Promise(resolve => res.on('drain', resolve));
-          }
-        })();
-      });
-    } else {
-      //Store the file data of the first file into an object
-      let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${objName}`, 'utf8', (err) => {
+      let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${name}`, 'utf8', (err) => {
         if (err) {
           console.log("ERROR: " + err);
         }
       });
 
       (async () => {
-        var content = JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }) + "$"
-        if (!res.write(content)) {
-          console.log("WAITING...")
-          // Will pause every 16384 iterations until `drain` is emitted
-          await new Promise(resolve => res.on('drain', resolve));
+        var content = JSON.stringify({ arrayBuffer: objFile1, name: name, type: "model/obj" }) + "$"
+        var result = await res.write(content);
+        if (!result) {
+          console.log("WAITING FOR DRAIN.... " + name);
+          await new Promise(resolve => {
+            console.log("INSIDE PROMISE");
+            return res.once('drain', resolve)
+          });
         }
       })();
-    }
+
+      console.log("DONE WAITING IN LOOP " + name)
+    });
 
   })
 
