@@ -141,9 +141,9 @@ app.get('/getFiles', (req, res) => {
 
   //When OBJ files are ready
   py.stdout.on("data", (msg) => {
-    console.log("RECIEVED: ", String(msg));
+    // console.log("RECIEVED: ", String(msg));
     objName = String(msg);//.replaceAll(" ", "").split("\n")[1].slice(0, -1);
-    console.log(objName);
+    // console.log(objName);
 
     if (objName.length > 9) {
       console.log("More than 1 title found");
@@ -158,8 +158,14 @@ app.get('/getFiles', (req, res) => {
           }
         });
 
-        res.write(JSON.stringify({ arrayBuffer: objFile1, name: name, type: "model/obj" }) + "$");
-        // res.write("$");
+        (async () => {
+          var content = JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }) + "$"
+          if (!res.write(content)) {
+            console.log("WAITING IN LOOP");
+            // Will pause every 16384 iterations until `drain` is emitted
+            await new Promise(resolve => res.on('drain', resolve));
+          }
+        })();
       });
     } else {
       //Store the file data of the first file into an object
@@ -169,8 +175,14 @@ app.get('/getFiles', (req, res) => {
         }
       });
 
-      res.write(JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }) + "$");
-      // res.write("$");
+      (async () => {
+        var content = JSON.stringify({ arrayBuffer: objFile1, name: objName, type: "model/obj" }) + "$"
+        if (!res.write(content)) {
+          console.log("WAITING...")
+          // Will pause every 16384 iterations until `drain` is emitted
+          await new Promise(resolve => res.on('drain', resolve));
+        }
+      })();
     }
 
   })
