@@ -173,6 +173,10 @@ app.get('/getFiles', (req, res) => {
 
   })
 
+  res.on('close', () => {
+    console.log("CONNECTION HAS BEEN CLOSED, WAS IT EXPECTED?");
+  });
+
   py.on('exit', () => {
     console.log("DONE");
     res.end();
