@@ -11,6 +11,7 @@ const fs = require("fs");
 const gtts = require('gtts');
 
 const { spawn } = require("child_process");
+const { TIMEOUT } = require("dns");
 
 var vocaText;
 
@@ -139,39 +140,44 @@ app.get('/getFiles', (req, res) => {
     'Content-Type': 'model/obj'
   });
 
+  var ok = true
+
   //When OBJ files are ready
-  py.stdout.on("data", (msg) => {
-    // console.log("RECIEVED: ", String(msg));
-    objName = String(msg);//.replaceAll(" ", "").split("\n")[1].slice(0, -1);
-    // console.log(objName);
-    console.log("More than 1 title found");
-    //Store the file data of the first file into an object
+  py.stdout.on("data", async (msg) => {
+
+    while (!ok) {
+      console.log("WAITING FOR OK " + msg)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    objName = String(msg);
     var objList = objName.split(/(?<=[j])/g)
-    objList.forEach((name) => {
-      console.log("Name in loop: " + name);
-      //Store the file data of the first file into an object
-      let objFile1 = fs.readFileSync(`./animation_output_textured/meshes/${name}`, 'utf8', (err) => {
-        if (err) {
-          console.log("ERROR: " + err);
-        }
-      });
 
-      (async () => {
-        var content = JSON.stringify({ arrayBuffer: objFile1, name: name, type: "model/obj" }) + "$"
-        var result = await res.write(content);
-        if (!result) {
-          console.log("WAITING FOR DRAIN.... " + name);
-          await new Promise(resolve => {
-            console.log("INSIDE PROMISE");
-            return res.once('drain', resolve)
-          });
-        }
-      })();
+    for (var i = 0; i < objList.length; i++) {
+      var name = objList[i];
+      // console.log("Name in loop: " + name);
 
-      console.log("DONE WAITING IN LOOP " + name)
-    });
+      var content = JSON.stringify({
+        arrayBuffer: fs.readFileSync(`./animation_output_textured/meshes/${name}`, 'utf8', (err) => {
+          if (err) {
+            console.log("ERROR: " + err);
+          }
+        }), name: name, type: "model/obj"
+      }) + "$"
+      ok = res.write(content);
 
-  })
+      if (!ok) {
+        console.log("WAITING FOR DRAIN.... " + name);
+        await new Promise(resolve => res.once('drain', () => {
+          console.log("DRAINED MEMORY");
+          delete content;
+          ok = true
+          resolve;
+        }));
+      }
+
+    }
+  });
 
   res.on('close', () => {
     console.log("CONNECTION HAS BEEN CLOSED, WAS IT EXPECTED?");
