@@ -1721,3 +1721,52 @@ Started output_sequence_meshes at: 3259.00
 Started output_sequence_meshes at: 3416.51
 Started output_sequence_meshes at: 3671.11
 Started output_sequence_meshes at: 3974.16
+Started output_sequence_meshes at: 4791.46
+Started output_sequence_meshes at: 4907.74
+Ended output_sequence_meshes at: 5476.05
+Total time for output_sequence_meshes: 568.31
+
+Started render_sequence_meshes at: 5476.05
+Ended render_sequence_meshes at: 5476.05
+Total time for render_sequence_meshes: 0.00
+
+Started run at: 4825.92
+Started inference at: 4825.92
+Ended inference at: 5476.12
+Total time for inference: 650.20
+
+Ended run at: 5476.12
+Total time for run: 650.20
+
+Started output_sequence_meshes at: 5798.67
+Ended output_sequence_meshes at: 6374.29
+Total time for output_sequence_meshes: 575.61
+
+Started render_sequence_meshes at: 6374.29
+Ended render_sequence_meshes at: 6374.29
+Total time for render_sequence_meshes: 0.00
+
+Started run at: 5716.04
+Started inference at: 5716.04
+Ended inference at: 6374.35
+Total time for inference: 658.32
+
+Ended run at: 6374.35
+Total time for run: 658.32
+
+Started output_sequence_meshes at: 7557.78
+Ended output_sequence_meshes at: 8138.21
+Total time for output_sequence_meshes: 580.43
+
+Started render_sequence_meshes at: 8138.21
+Ended render_sequence_meshes at: 8138.21
+Total time for render_sequence_meshes: 0.00
+
+Started run at: 7474.95
+Started inference at: 7474.96
+Ended inference at: 8138.27
+Total time for inference: 663.32
+
+Ended run at: 8138.27
+Total time for run: 663.32
+

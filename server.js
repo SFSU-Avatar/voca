@@ -13,6 +13,33 @@ const gtts = require('gtts');
 const { spawn } = require("child_process");
 const { TIMEOUT } = require("dns");
 
+class Queue {
+  constructor() {
+    this.elements = {};
+    this.head = 0;
+    this.tail = 0;
+  }
+  enqueue(element) {
+    this.elements[this.tail] = element;
+    this.tail++;
+  }
+  dequeue() {
+    const item = this.elements[this.head];
+    delete this.elements[this.head];
+    this.head++;
+    return item;
+  }
+  peek() {
+    return this.elements[this.head];
+  }
+  get length() {
+    return this.tail - this.head;
+  }
+  get isEmpty() {
+    return this.length === 0;
+  }
+}
+
 var vocaText;
 
 app.use(expressFileUpload());
@@ -141,16 +168,19 @@ app.get('/getFiles', (req, res) => {
   });
 
   var ok = true
+  var objQueue = new Queue()
 
   //When OBJ files are ready
   py.stdout.on("data", async (msg) => {
 
+    objQueue.enqueue(msg)
+
     while (!ok) {
-      console.log("WAITING FOR OK " + msg)
+      // console.log("WAITING FOR OK " + msg)
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    objName = String(msg);
+    objName = String(objQueue.dequeue());
     var objList = objName.split(/(?<=[j])/g)
 
     for (var i = 0; i < objList.length; i++) {
@@ -183,8 +213,11 @@ app.get('/getFiles', (req, res) => {
     console.log("CONNECTION HAS BEEN CLOSED, WAS IT EXPECTED?");
   });
 
-  py.on('exit', () => {
+  py.on('exit', async () => {
     console.log("DONE");
+    while (!objQueue.isEmpty) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
     res.end();
   });
 
